@@ -8,5 +8,6 @@ urlpatterns = [
     path('<int:id>/', ArticleView.as_view()),
     path('<int:article_id>/comments/<int:id>/', ArticleCommentsView.as_view()),
     path('create/', ArticleFormCreateView.as_view(), name='articles_create'),
+    path('<int:id>/delete/', ArticleFormDestroyView.as_view(), name='articles_destroy'), # удаление
      
 ]

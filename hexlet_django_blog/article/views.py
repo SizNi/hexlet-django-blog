@@ -23,7 +23,7 @@ class ArticleFormDestroyView(View):
             articel.delete()
         return redirect('articles')
     
-     
+ 
 class ArticleFormUpdateView(View):
 
     def get(self, request, *args, **kwargs):
