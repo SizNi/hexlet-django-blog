@@ -7,17 +7,62 @@ from hexlet_django_blog.article.models import Article, Comment
 from .forms import CommentArticleForm
 from django.forms import ModelForm
 
-class ArticleCommentFormView(View):
+"""class ArticleCommentFormView(View):
 
     def post(self, request, *args, **kwargs):
-        form = ArticleCommentForm(request.POST) # Получаем данные формы из запроса
+        # Получаем данные формы из запроса
+        form = ArticleCommentForm(request.POST)
         if form.is_valid(): # Проверяем данных формы на корректность
-            form.save() # Сохраняем форм
+            form.save() # Сохраняем форм"""
+class ArticleFormDestroyView(View):
 
-class ArticleCommentForm(ModelForm):
+    def post(self, request, *args, **kwargs):
+        article_id = kwargs.get('id')
+        articel = Article.objects.get(id=article_id)
+        if articel:
+            articel.delete()
+        return redirect('articles')
+    
+     
+class ArticleFormUpdateView(View):
+
+    def get(self, request, *args, **kwargs):
+        article_id = kwargs.get('id')
+        article = Article.objects.get(id=article_id)
+        form = ArticleForm(instance=article)
+        return render(request, 'update.html', {'form': form, 'article_id':article_id})
+    
+    def post(self, request, *args, **kwargs):
+        article_id = kwargs.get('id')
+        article = Article.objects.get(id=article_id)
+        form = ArticleForm(request.POST, instance=article)
+        if form.is_valid():
+            form.save()
+            return redirect('articles')
+
+        return render(request, 'update.html', {'form': form, 'article_id':article_id})
+
+
+class ArticleForm(ModelForm):
     class Meta:
-        model = CommentArticle
-        fields = ['content', 'author', 'article']
+        model = Article
+        fields = ['name', 'body']
+
+
+
+class ArticleFormCreateView(View):
+
+    def get(self, request, *args, **kwargs):
+        form = ArticleForm()
+        return render(request, 'create.html', {'form': form})
+
+    def post(self, request, *args, **kwargs):
+        form = ArticleForm(request.POST)
+        if form.is_valid(): # Если данные корректные, то сохраняем данные формы
+            form.save()
+            return redirect('articles') # Редирект на указанный маршрут
+        # Если данные некоректные, то возвращем человека обратно на страницу с заполенной формой
+        return render(request, 'create.html', {'form': form})
 
 
 class CommentArticleView(View):
